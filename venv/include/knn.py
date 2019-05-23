@@ -9,6 +9,7 @@ from sklearn import datasets
 
 
 if __name__ == '__main__':
+    # knn
     knn_classify = neighbors.KNeighborsClassifier()
     iris = datasets.load_iris()
     knn_classify.fit(iris.data, iris.target)
