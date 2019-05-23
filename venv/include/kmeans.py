@@ -12,7 +12,9 @@ from sklearn.datasets import load_iris
 
 if __name__ == '__main__':
     iris = load_iris()
-    X = iris.data[:]
+    # choose the dimension for k-means
+    X = iris.data[:, 2:]
+    # X = iris.data[:]
     # display the distribution
     # plt.scatter(X[:, 0], X[:, 1], c="red", marker='o', label='see')
     # plt.xlabel('petal length')
@@ -20,6 +22,7 @@ if __name__ == '__main__':
     # plt.legend(loc=2)
     # plt.show()
 
+    # k-means cluster
     estimator = KMeans(n_clusters=3)
     estimator.fit(X)
     label_pred = estimator.labels_
