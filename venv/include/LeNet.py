@@ -4,44 +4,69 @@
 # Date     :19-5-23 下午10:54
 # File     :LeNet.py
 # Location:/Home/PycharmProjects/..
-from keras import layers
-from keras.models import Model
-import numpy as np
+import keras
+from keras.datasets import mnist
+from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Dense, Flatten
+from keras.models import Sequential
 
 
-class ImageLoader(Loader):
-    def get_picture(self, content, index):
-        # file head is 16 byte
-        # 28 * 28 is a picture
-        start = index * 28 * 28 + 16
-        picture = []
-        for i in range(28):
-            # add a element
-            picture.append([])
-            for j in range(28):
-                byte1 = content[start + i * 28 + j]
-                picture[i].append(byte1)
-        return picture
-
-
-def lenet_5(in_shape=(32, 32, 1), n_classes=10, opt='sgd'):
-    in_layer = layers.Input(in_shape)
-    conv1 = layers.Conv2D(filters=20, kernel_size=5, padding='same', activation='relu')(in_layer)
-    pool1 = layers.MaxPool2D()(conv1)
-    conv2 = layers.Conv2D(filters=50, kernel_size=5, padding='same', activation='relu')(pool1)
-    pool2 = layers.MaxPool2D()(conv2)
-    flatten = layers.Flatten()(pool2)
-    dense1 = layers.Dense(500, activation='relu')(flatten)
-    preds = layers.Dense(n_classes, activation='softmax')(dense1)
-    model = Model(in_layer, preds)
-    model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+def LeNet_5():
+    model = Sequential()
+    # First Layer
+    # input: 32 * 32
+    # kernel: 5 * 5 with 6
+    # feature map(output): 28 * 28 with 6
+    model.add(Conv2D(6, kernel_size=(5, 5), activation='relu', input_shape=(28, 28, 1)))
+    # Second Layer
+    # input: 28 * 28 with 6
+    # pool size: 2 * 2
+    # feature map(output): 14 * 14 with 6
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # Third Layer
+    # input: 14 * 14 with 6
+    # kernel: 5 * 5 with 16
+    # feature map(output): 10 * 10 with 16
+    # with the combination from 6 to 16
+    model.add(Conv2D(16, kernel_size=(5, 5), activation='relu'))
+    # Forth Layer
+    # input: 10 * 10 with 16
+    # pool size: 2 * 2
+    # feature map(output): 5 * 5 with 16
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # Trans the matrix to vector
+    model.add(Flatten())
+    # Fifth Layer
+    # input: 5 * 5 with 16
+    # kernel: 5 * 5 with 120
+    # feature map(output): 1 * 1 with 120
+    model.add(Dense(120, activation='relu'))
+    # Sixth Layer
+    # input: 1 * 1 with 120
+    # calculate: multiply with parameter and add a bias
+    # feature map(output): 1 * 1
+    model.add(Dense(84, activation='relu'))
+    # Seventh Layer
+    # input: 1 * 1 with 120
+    # calculate: RBF(SUM((xj-wij)^2) tend to 0)
+    # feature map(output): 1 * 1
+    model.add(Dense(10, activation='softmax'))
+    model.compile(loss=keras.metrics.categorical_crossentropy, optimizer=keras.optimizers.Adam(), metrics=['accuracy'])
     return model
 
 
 if __name__ == '__main__':
-    # model = lenet_5()
-    # image = ImageLoader('train-images.idx3-ubyte', 5)
-    image = ImageLoader('t10k-images.idx3-ubyte')
-    binfile = open(filename, 'rb')
-    print(binfile.read(10))
-    # print(model.summary())
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)
+    x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)
+    x_train = x_train / 255
+    x_test = x_test / 255
+    y_train = keras.utils.to_categorical(y_train, 10)
+    y_test = keras.utils.to_categorical(y_test, 10)
+    model = LeNet_5()
+    model.fit(x_train, y_train, batch_size=128, epochs=20, verbose=1, validation_data=(x_test, y_test))
+    score = model.evaluate(x_test, y_test)
+    # print('Test Loss:', score[0])
+    # print('Test accuracy:', score[1])
+
+    model.predict(x_test[0])

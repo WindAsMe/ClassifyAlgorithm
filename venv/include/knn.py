@@ -13,5 +13,4 @@ if __name__ == '__main__':
     knn_classify = neighbors.KNeighborsClassifier()
     iris = datasets.load_iris()
     knn_classify.fit(iris.data, iris.target)
-    predict_label = knn_classify.predict([[0.1, 0.2, 0.3, 0.4]])
-    print(predict_label)
+    print(knn_classify.predict([[0.1, 0.2, 0.3, 0.4]]))
