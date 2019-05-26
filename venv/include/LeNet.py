@@ -66,7 +66,7 @@ if __name__ == '__main__':
     model = LeNet_5()
     model.fit(x_train, y_train, batch_size=128, epochs=20, verbose=1, validation_data=(x_test, y_test))
     score = model.evaluate(x_test, y_test)
-    # print('Test Loss:', score[0])
-    # print('Test accuracy:', score[1])
+    print('Test Loss:', score[0])
+    print('Test accuracy:', score[1])
 
-    model.predict(x_test[0])
+    # model.predict(x_test[0])
