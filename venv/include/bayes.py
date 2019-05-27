@@ -9,7 +9,8 @@ from sklearn import datasets
 from sklearn.naive_bayes import GaussianNB
 # Multinomial Naive Bayes
 from sklearn.naive_bayes import MultinomialNB
-
+# Bernoulli Naive Bayes
+from sklearn.naive_bayes import BernoulliNB
 
 if __name__ == '__main__':
     iris = datasets.load_iris()
@@ -22,3 +23,8 @@ if __name__ == '__main__':
     mnb.fit(iris.data, iris.target)
     y_pre = mnb.predict(iris.data)
     print("Multinomial Naive Bayes\n sample: %d  wrong: %d" % (iris.data.shape[0], (iris.target != y_pre).sum()))
+
+    bnb = BernoulliNB()
+    bnb.fit(iris.data, iris.target)
+    y_pre = bnb.predict(iris.data)
+    print("Bernoulli Naive Bayes\n sample: %d  wrong: %d" % (iris.data.shape[0], (iris.target != y_pre).sum()))
